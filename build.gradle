@@ -1,0 +1,46 @@
+buildscript {
+    ext.kotlin_version = '1.2.41'
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.google.gms:google-services:3.3.1'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+ext {
+    //Version and code
+    ver = '0.1.1'
+    code = 1
+
+    // App dependencies
+    supportLibVersion = '27.1.1'
+    mapVersion = '15.0.1'
+    firebaseVersion = '15.0.2'
+    constraintVersion = '1.1.0'
+    junitVersion = '4.12'
+    archComponentsVersion = "1.1.1"
+    roomVersion = "1.0.0"
+    daggerVersion = "2.11"
+    retrofitVersion = "2.4.0"
+    mockitoVersion = "2.7.19"
+    mockWebServerVersion = "3.8.1"
+    testVersion = "1.0.1"
+    picassoVersion = "2.71828"
+    okHttpVersion = "3.10.0"
+    canaryVersion = "1.5.4"
+}
