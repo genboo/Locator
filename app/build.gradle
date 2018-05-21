@@ -43,6 +43,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField "Boolean", "DEBUG_MODE", "false"
             testCoverageEnabled !project.hasProperty('android.injected.invoked.from.ide')
+            buildConfigField "String", "API_URL", "\"http://spc-m.ru/locator\""
         }
 
         debug {
@@ -52,6 +53,7 @@ android {
             buildConfigField "Boolean", "DEBUG_MODE", "true"
             applicationIdSuffix ".debug"
             versionNameSuffix "-d"
+            buildConfigField "String", "API_URL", "\"http://spc-m.ru/locator\""
         }
     }
 }
@@ -68,25 +70,23 @@ dependencies {
     implementation "com.google.android.gms:play-services-maps:$mapVersion"
     implementation "com.android.support.constraint:constraint-layout:$constraintVersion"
     implementation "android.arch.lifecycle:extensions:$archComponentsVersion"
-    implementation "android.arch.persistence.room:runtime:$roomVersion"
     implementation "com.google.dagger:dagger:$daggerVersion"
     implementation "com.google.dagger:dagger-android:$daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$daggerVersion"
     implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
-
     implementation "com.google.firebase:firebase-core:$firebaseVersion"
     implementation "com.google.firebase:firebase-messaging:$firebaseVersion"
-
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$canaryVersion"
-
     releaseImplementation "com.squareup.leakcanary:leakcanary-android-no-op:$canaryVersion"
-
     annotationProcessor "com.google.dagger:dagger-android-processor:$daggerVersion"
     annotationProcessor "android.arch.lifecycle:compiler:$archComponentsVersion"
 
     kapt "android.arch.persistence.room:compiler:$roomVersion"
     kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+    implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
+    implementation "com.squareup.picasso:picasso:$picassoVersion"
 
     androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.1', {
         exclude group: 'com.android.support', module: 'support-annotations'

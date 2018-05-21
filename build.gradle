@@ -34,7 +34,7 @@ ext {
     constraintVersion = '1.1.0'
     junitVersion = '4.12'
     archComponentsVersion = "1.1.1"
-    roomVersion = "1.0.0"
+    roomVersion = "1.1.0"
     daggerVersion = "2.11"
     retrofitVersion = "2.4.0"
     mockitoVersion = "2.7.19"
