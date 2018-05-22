@@ -43,7 +43,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField "Boolean", "DEBUG_MODE", "false"
             testCoverageEnabled !project.hasProperty('android.injected.invoked.from.ide')
-            buildConfigField "String", "API_URL", "\"http://spc-m.ru/locator\""
+            buildConfigField "String", "API_URL", "\"http://spc-m.ru\""
         }
 
         debug {
@@ -53,7 +53,7 @@ android {
             buildConfigField "Boolean", "DEBUG_MODE", "true"
             applicationIdSuffix ".debug"
             versionNameSuffix "-d"
-            buildConfigField "String", "API_URL", "\"http://spc-m.ru/locator\""
+            buildConfigField "String", "API_URL", "\"http://spc-m.ru\""
         }
     }
 }

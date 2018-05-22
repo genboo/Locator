@@ -1,8 +1,8 @@
 package ru.devsp.app.locator.model.api
 
 import android.arch.lifecycle.LiveData
+import retrofit2.http.*
 
-import retrofit2.http.GET
 import ru.devsp.app.locator.model.tools.ApiResponse
 
 /**
@@ -12,7 +12,8 @@ import ru.devsp.app.locator.model.tools.ApiResponse
 
 interface LocatorApi {
 
-    @get:GET("/v1/sets")
-    val sets: LiveData<ApiResponse<List<String>>>
+    @FormUrlEncoded
+    @POST("/locator/settoken/{user}")
+    fun setToken(@Path("user") user: String,  @Field("token") token: String): LiveData<ApiResponse<Result>>
 
 }

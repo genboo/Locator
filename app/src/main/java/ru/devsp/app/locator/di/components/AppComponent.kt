@@ -7,6 +7,7 @@ import dagger.Component
 import ru.devsp.app.locator.di.ViewModelModule
 import ru.devsp.app.locator.di.modules.Prefs
 import ru.devsp.app.locator.di.modules.RetrofitModule
+import ru.devsp.app.locator.services.InstanceIdService
 import ru.devsp.app.locator.view.MainActivity
 
 /**
@@ -26,5 +27,7 @@ interface AppComponent {
     }
 
     fun inject(activity: MainActivity)
+
+    fun inject(service: InstanceIdService)
 
 }
