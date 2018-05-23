@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 for (location in locationResult.locations) {
                     val here = LatLng(location.latitude, location.longitude)
                     map.addMarker(MarkerOptions().position(here).title("Ты здесь"))
-                    map.moveCamera(CameraUpdateFactory.newLatLng(here))
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(here, SETTING_ZO0M))
                     sendLocation(here, sendTo)
                     break
                 }
@@ -178,8 +178,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                             val position = LatLng(result.lat, result.lon)
                             map.addMarker(MarkerOptions().position(position).title("Пока еще тут"))
                             map.moveCamera(CameraUpdateFactory.newLatLng(position))
-                            Logger.e("MainActivity", position.toString())
-                            Snackbar.make(mainContent, "Координаты " + position.toString(), Snackbar.LENGTH_LONG).show()
+                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, SETTING_ZO0M))
                         } else {
                             Snackbar.make(mainContent, result.error?.message
                                     ?: "Координаты не получены", Snackbar.LENGTH_LONG).show()
@@ -210,5 +209,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     companion object {
         const val SETTING_USER = "user_id"
+        const val SETTING_ZO0M = 16f
     }
 }

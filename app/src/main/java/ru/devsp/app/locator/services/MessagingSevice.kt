@@ -30,14 +30,13 @@ class MessagingService : FirebaseMessagingService() {
             startActivity(intent)
         } else {
             val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
-
-            val builder = NotificationCompat.Builder(this, "main")
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val builder = NotificationCompat.Builder(this, App.NOTIFICATION_CHANNEL_ID)
                     .setContentTitle(title)
                     .setContentText(message)
                     .setSmallIcon(R.drawable.ic_launcher_foreground)
                     .setAutoCancel(true)
                     .setContentIntent(pendingIntent)
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationId++
             notificationManager.notify(notificationId, builder.build())
         }

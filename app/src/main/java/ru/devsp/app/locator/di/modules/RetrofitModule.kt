@@ -31,7 +31,7 @@ class RetrofitModule {
     @Provides
     internal fun provideRetrofit(): Retrofit {
         val httpClient = OkHttpClient.Builder()
-                .retryOnConnectionFailure(false)
+                .retryOnConnectionFailure(true)
                 .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
                 .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
 
