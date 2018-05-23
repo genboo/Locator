@@ -9,13 +9,13 @@ import ru.devsp.app.locator.model.tools.ApiResponse
 
 object TokenSender : Observer<ApiResponse<Result>> {
 
-    private lateinit var request : LiveData<ApiResponse<Result>>
+    private lateinit var request: LiveData<ApiResponse<Result>>
 
-    fun sendToken(appExecutor: AppExecutors, locatorApi: LocatorApi) {
+    fun sendToken(appExecutor: AppExecutors, locatorApi: LocatorApi, user: String) {
         appExecutor.networkIO().execute {
             val refreshedToken = FirebaseInstanceId.getInstance().token ?: ""
             Logger.e("TokenSender", "token : $refreshedToken")
-            request = locatorApi.setToken("test", refreshedToken)
+            request = locatorApi.setToken(user, refreshedToken)
             request.observeForever(this)
         }
     }
@@ -23,9 +23,9 @@ object TokenSender : Observer<ApiResponse<Result>> {
     override fun onChanged(result: ApiResponse<Result>?) {
         request.removeObserver(this)
         val flag = result?.body?.result ?: false
-        if(flag){
+        if (flag) {
             Logger.e("TokenSender", "token saved")
-        }else{
+        } else {
             Logger.e("TokenSender", "token not saved")
         }
     }

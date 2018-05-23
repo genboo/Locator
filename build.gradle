@@ -29,7 +29,7 @@ ext {
 
     // App dependencies
     supportLibVersion = '27.1.1'
-    mapVersion = '15.0.1'
+    googleServicesVersion = '15.0.1'
     firebaseVersion = '15.0.2'
     constraintVersion = '1.1.0'
     junitVersion = '4.12'
