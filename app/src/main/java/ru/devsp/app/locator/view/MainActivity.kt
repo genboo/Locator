@@ -1,11 +1,15 @@
 package ru.devsp.app.locator.view
 
 import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.transition.Fade
+import android.transition.TransitionManager
 import android.view.View
 import android.widget.Button
 import com.google.android.gms.location.*
@@ -19,10 +23,8 @@ import ru.devsp.app.locator.App
 import ru.devsp.app.locator.R
 import ru.devsp.app.locator.di.components.AppComponent
 import ru.devsp.app.locator.model.api.LocatorApi
-import ru.devsp.app.locator.tools.AppExecutors
-import ru.devsp.app.locator.tools.Logger
-import ru.devsp.app.locator.tools.PermissionsHelper
-import ru.devsp.app.locator.tools.TokenSender
+import ru.devsp.app.locator.tools.*
+import ru.devsp.app.locator.viewmodel.MainViewModel
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -32,6 +34,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     @Inject
     lateinit var locatorApi: LocatorApi
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var map: GoogleMap
     private lateinit var locationCallback: LocationCallback
@@ -51,6 +56,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             component?.inject(this)
         }
 
+        val viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
+
         Logger.e("MainActivity", "token : " + FirebaseInstanceId.getInstance().token)
 
         val mapFragment = supportFragmentManager
@@ -62,6 +69,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 locationResult ?: return
                 for (location in locationResult.locations) {
                     val here = LatLng(location.latitude, location.longitude)
+                    map.clear()
                     map.addMarker(MarkerOptions().position(here).title("Ты здесь"))
                     map.animateCamera(CameraUpdateFactory.newLatLngZoom(here, SETTING_ZO0M))
                     sendLocation(here, sendTo)
@@ -112,7 +120,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     @SuppressWarnings("MissingPermission")
     private fun askLocationSend(user: String) {
-        sendLocation.visibility = View.VISIBLE
+        sendLocation.slideIn(mapBlock)
         sendLocation.setOnClickListener({
             if (PermissionsHelper.havePermissionLocation(this)) {
                 val locationRequest = LocationRequest().apply {
@@ -122,7 +130,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
                 sendTo = user
                 fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
-                sendLocation.visibility = View.GONE
+                TransitionManager.beginDelayedTransition(mapBlock, Fade())
+                sendLocation.fadeOut(mapBlock)
             }
         })
     }
@@ -180,6 +189,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     appExecutor.mainThread().execute({
                         if (result.error == null) {
                             val position = LatLng(result.lat, result.lon)
+                            map.clear()
                             map.addMarker(MarkerOptions().position(position).title("Пока еще тут"))
                             map.moveCamera(CameraUpdateFactory.newLatLng(position))
                             map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, SETTING_ZO0M))
