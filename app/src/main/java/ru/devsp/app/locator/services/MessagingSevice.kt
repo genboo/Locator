@@ -34,12 +34,22 @@ class MessagingService : FirebaseMessagingService() {
             val builder = NotificationCompat.Builder(this, App.NOTIFICATION_CHANNEL_ID)
                     .setContentTitle(title)
                     .setContentText(message)
-                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                    .setSmallIcon(R.drawable.ic_map_marker)
                     .setAutoCancel(true)
                     .setContentIntent(pendingIntent)
-            notificationId++
-            notificationManager.notify(notificationId, builder.build())
+            val notification = when (action) {
+                "sendLocation" -> NOTIFICATION_TYPE_LOCATION_REQUEST
+                "loadLocation" -> NOTIFICATION_TYPE_LOCATION_READY
+                else -> ++notificationId
+            }
+
+            notificationManager.notify(notification, builder.build())
         }
+    }
+
+    companion object {
+        const val NOTIFICATION_TYPE_LOCATION_REQUEST = 1
+        const val NOTIFICATION_TYPE_LOCATION_READY = 2
     }
 
 }

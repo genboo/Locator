@@ -13,6 +13,7 @@ import com.google.android.gms.maps.*
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.devsp.app.locator.App
 import ru.devsp.app.locator.R
@@ -49,6 +50,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             component = (application as App).appComponent
             component?.inject(this)
         }
+
+        Logger.e("MainActivity", "token : " + FirebaseInstanceId.getInstance().token)
 
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
@@ -109,8 +112,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     @SuppressWarnings("MissingPermission")
     private fun askLocationSend(user: String) {
-        val snackBar = Snackbar.make(mainContent, "Отправить координаты?", Snackbar.LENGTH_LONG)
-        snackBar.setAction("Да", {
+        sendLocation.visibility = View.VISIBLE
+        sendLocation.setOnClickListener({
             if (PermissionsHelper.havePermissionLocation(this)) {
                 val locationRequest = LocationRequest().apply {
                     interval = 10000
@@ -119,8 +122,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
                 sendTo = user
                 fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+                sendLocation.visibility = View.GONE
             }
-        }).show()
+        })
     }
 
     private fun sendLocation(location: LatLng, sendTo: String) {
@@ -203,8 +207,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-        val uiSettings = map.uiSettings
-        uiSettings.isZoomControlsEnabled = true
     }
 
     companion object {
