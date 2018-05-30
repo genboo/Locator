@@ -3,7 +3,6 @@ package ru.devsp.app.locator.view
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
-import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -38,6 +37,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
+    private lateinit var viewModel: MainViewModel
+
     private lateinit var map: GoogleMap
     private lateinit var locationCallback: LocationCallback
 
@@ -56,7 +57,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             component?.inject(this)
         }
 
-        val viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
 
         Logger.e("MainActivity", "token : " + FirebaseInstanceId.getInstance().token)
 
@@ -69,9 +70,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 locationResult ?: return
                 for (location in locationResult.locations) {
                     val here = LatLng(location.latitude, location.longitude)
-                    map.clear()
-                    map.addMarker(MarkerOptions().position(here).title("Ты здесь"))
-                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(here, SETTING_ZO0M))
+                    addMarker(here, "Ты здесь")
                     sendLocation(here, sendTo)
                     break
                 }
@@ -87,15 +86,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         names = resources.getStringArray(R.array.names)
         users = resources.getStringArray(R.array.users)
 
-        val selectedUser = getParam(SETTING_USER)
+        val selectedUser = viewModel.getParam(SETTING_USER)
         if (selectedUser == "") {
             selectUserBlock.removeAllViews()
             for (i in names.indices) {
-                val button = Button(this)
+                val button = Button(this, null, 0, R.style.Button_Rounded)
                 button.text = names[i]
                 button.tag = users[i]
                 button.setOnClickListener({ v ->
-                    saveParam(SETTING_USER, v.tag.toString())
+                    viewModel.saveParam(SETTING_USER, v.tag.toString())
                     prepareMapBlock(v.tag.toString())
                     TokenSender.sendToken(appExecutor, locatorApi, v.tag.toString())
                 })
@@ -139,7 +138,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun sendLocation(location: LatLng, sendTo: String) {
         Logger.e(MainActivity::class.java.simpleName, "send to $sendTo")
         appExecutor.networkIO().execute {
-            val request = locatorApi.setLocation(getParam(SETTING_USER), sendTo, location.latitude.toString(), location.longitude.toString())
+            val request = locatorApi.setLocation(viewModel.getParam(SETTING_USER), sendTo, location.latitude.toString(), location.longitude.toString())
             request.observe(this, Observer {
                 request.removeObservers(this)
                 Snackbar.make(mainContent, "Отправлено", Snackbar.LENGTH_LONG).show()
@@ -147,17 +146,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-
     private fun prepareMapBlock(excludedUser: String) {
         selectUserBlock.visibility = View.GONE
         mapBlock.visibility = View.VISIBLE
         usersBlock.removeAllViews()
         for (i in names.indices) {
             if (users[i] != excludedUser) {
-                val button = Button(this)
-                button.text = names[i]
+                val button = ExtendedButton(this)
+                button.setText(names[i] )
                 button.tag = users[i]
-                button.setOnClickListener({ askLocation(getParam(SETTING_USER), it.tag.toString()) })
+                button.setOnClickListener({ askLocation(viewModel.getParam(SETTING_USER), it.tag.toString()) })
                 usersBlock.addView(button)
             }
         }
@@ -189,10 +187,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     appExecutor.mainThread().execute({
                         if (result.error == null) {
                             val position = LatLng(result.lat, result.lon)
-                            map.clear()
-                            map.addMarker(MarkerOptions().position(position).title("Пока еще тут"))
-                            map.moveCamera(CameraUpdateFactory.newLatLng(position))
-                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, SETTING_ZO0M))
+                            viewModel.saveLastLocation(result.lat, result.lon)
+                            addMarker(position, "Пока еще тут")
                         } else {
                             Snackbar.make(mainContent, result.error?.message
                                     ?: "Координаты не получены", Snackbar.LENGTH_LONG).show()
@@ -203,20 +199,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         })
     }
 
-    private fun saveParam(key: String, value: String) {
-        val prefs = getSharedPreferences("main", Context.MODE_PRIVATE)
-        val editor = prefs.edit()
-        editor.putString(key, value)
-        editor.apply()
-    }
-
-    private fun getParam(key: String): String {
-        val prefs = getSharedPreferences("main", Context.MODE_PRIVATE)
-        return prefs.getString(key, "")
+    fun addMarker(position: LatLng, title: String) {
+        map.clear()
+        map.addMarker(MarkerOptions().position(position).title(title))
+        map.moveCamera(CameraUpdateFactory.newLatLng(position))
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(position, SETTING_ZO0M))
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
+        val lastPosition = viewModel.getSavedLocation()
+        if (lastPosition != null) {
+            addMarker(lastPosition, "Был когда-то тут")
+        }
     }
 
     companion object {

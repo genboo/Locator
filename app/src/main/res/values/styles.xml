@@ -8,4 +8,26 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="Button.Rounded" parent="Base.Widget.AppCompat.Button.Small">
+        <item name="android:background">@drawable/bg_rounded_button</item>
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:minHeight">32dp</item>
+        <item name="android:minWidth">32dp</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="Button.Rounded.Main">
+        <item name="android:layout_marginEnd">38dp</item>
+    </style>
+
+
+    <style name="Button.Rounded.Image">
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:layout_gravity">end</item>
+    </style>
 </resources>

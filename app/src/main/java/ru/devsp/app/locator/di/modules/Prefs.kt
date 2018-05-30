@@ -15,4 +15,9 @@ class Prefs {
         return context.getSharedPreferences("main", Context.MODE_PRIVATE)
     }
 
+    companion object {
+        const val LAST_LOCATION_LAT = "last_location_lat"
+        const val LAST_LOCATION_LON = "last_location_lon"
+    }
+
 }
