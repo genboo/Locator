@@ -117,22 +117,26 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    @SuppressWarnings("MissingPermission")
     private fun askLocationSend(user: String) {
         sendLocation.slideIn(mapBlock)
         sendLocation.setOnClickListener({
-            if (PermissionsHelper.havePermissionLocation(this)) {
-                val locationRequest = LocationRequest().apply {
-                    interval = 10000
-                    fastestInterval = 5000
-                    priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-                }
-                sendTo = user
-                fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
-                TransitionManager.beginDelayedTransition(mapBlock, Fade())
-                sendLocation.fadeOut(mapBlock)
-            }
+            getLocationAndSend(user)
         })
+    }
+
+    @SuppressWarnings("MissingPermission")
+    private fun getLocationAndSend(user: String) {
+        if (PermissionsHelper.havePermissionLocation(this)) {
+            val locationRequest = LocationRequest().apply {
+                interval = 10000
+                fastestInterval = 5000
+                priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            }
+            sendTo = user
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+            TransitionManager.beginDelayedTransition(mapBlock, Fade())
+            sendLocation.fadeOut(mapBlock)
+        }
     }
 
     private fun sendLocation(location: LatLng, sendTo: String) {
@@ -153,9 +157,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         for (i in names.indices) {
             if (users[i] != excludedUser) {
                 val button = ExtendedButton(this)
-                button.setText(names[i] )
+                button.setText(names[i])
                 button.tag = users[i]
-                button.setOnClickListener({ askLocation(viewModel.getParam(SETTING_USER), it.tag.toString()) })
+                button.setOnClickListener({ askLocation(viewModel.getParam(SETTING_USER), button.tag.toString()) })
+                button.setOnExtendedButtonClickListener(View.OnClickListener { getLocationAndSend(button.tag.toString()) })
                 usersBlock.addView(button)
             }
         }

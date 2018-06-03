@@ -36,10 +36,12 @@ class ExtendedButton : FrameLayout {
         val paramsImage = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
         paramsImage.gravity = Gravity.END
         image.layoutParams = paramsImage
-        image.setImageDrawable(resources.getDrawable(R.drawable.ic_map_marker, context.theme))
+        image.setImageDrawable(resources.getDrawable(R.drawable.ic_send, context.theme))
+        image.isClickable = true
+        image.isFocusable = true
 
         val paramsButton = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-        paramsButton.setMargins(0, 0, resources.getDimensionPixelSize(R.dimen.extended_button_right), 0)
+        paramsButton.marginEnd = resources.getDimensionPixelSize(R.dimen.extended_button_right)
         button.layoutParams = paramsButton
         button.text = "Test"
 
